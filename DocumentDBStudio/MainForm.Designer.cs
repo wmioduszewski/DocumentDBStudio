@@ -87,12 +87,14 @@ namespace Microsoft.Azure.DocumentDBStudio
             this.cbIndexingPolicyDefault = new System.Windows.Forms.CheckBox();
             this.cbAutomatic = new System.Windows.Forms.CheckBox();
             this.ButtomSplitContainer = new System.Windows.Forms.SplitContainer();
-            this.triggerPanel = new System.Windows.Forms.Panel();
-            this.rbPostTrigger = new System.Windows.Forms.RadioButton();
-            this.rbPreTrigger = new System.Windows.Forms.RadioButton();
             this.feedToolStrip = new System.Windows.Forms.ToolStrip();
             this.toolStripTextMaxItemCount = new System.Windows.Forms.ToolStripTextBox();
             this.btnExecuteNext = new System.Windows.Forms.ToolStripButton();
+            this.triggerPanel = new System.Windows.Forms.Panel();
+            this.treequery = new System.Windows.Forms.CheckBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.rbPostTrigger = new System.Windows.Forms.RadioButton();
+            this.rbPreTrigger = new System.Windows.Forms.RadioButton();
             this.webBrowserResponse = new System.Windows.Forms.WebBrowser();
             this.tsMenu = new System.Windows.Forms.ToolStrip();
             this.btnBack = new System.Windows.Forms.ToolStripButton();
@@ -155,8 +157,8 @@ namespace Microsoft.Azure.DocumentDBStudio
             this.ButtomSplitContainer.Panel1.SuspendLayout();
             this.ButtomSplitContainer.Panel2.SuspendLayout();
             this.ButtomSplitContainer.SuspendLayout();
-            this.triggerPanel.SuspendLayout();
             this.feedToolStrip.SuspendLayout();
+            this.triggerPanel.SuspendLayout();
             this.tsMenu.SuspendLayout();
             this.tsAddress.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -265,6 +267,7 @@ namespace Microsoft.Azure.DocumentDBStudio
             // 
             // tabRequest
             // 
+            this.tabRequest.Controls.Add(this.treequery);
             this.tabRequest.Controls.Add(this.tbRequest);
             this.tabRequest.Location = new System.Drawing.Point(4, 26);
             this.tabRequest.Margin = new System.Windows.Forms.Padding(4);
@@ -356,11 +359,11 @@ namespace Microsoft.Azure.DocumentDBStudio
             // tabResponse
             // 
             this.tabResponse.Controls.Add(this.tbResponse);
-            this.tabResponse.Location = new System.Drawing.Point(4, 26);
+            this.tabResponse.Location = new System.Drawing.Point(4, 22);
             this.tabResponse.Margin = new System.Windows.Forms.Padding(4);
             this.tabResponse.Name = "tabResponse";
             this.tabResponse.Padding = new System.Windows.Forms.Padding(4);
-            this.tabResponse.Size = new System.Drawing.Size(937, 131);
+            this.tabResponse.Size = new System.Drawing.Size(937, 135);
             this.tabResponse.TabIndex = 1;
             this.tabResponse.Text = "Response Headers";
             this.tabResponse.UseVisualStyleBackColor = true;
@@ -375,7 +378,7 @@ namespace Microsoft.Azure.DocumentDBStudio
             this.tbResponse.Name = "tbResponse";
             this.tbResponse.ReadOnly = true;
             this.tbResponse.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.tbResponse.Size = new System.Drawing.Size(929, 123);
+            this.tbResponse.Size = new System.Drawing.Size(929, 127);
             this.tbResponse.TabIndex = 0;
             // 
             // tabPageRequestOptions
@@ -388,10 +391,10 @@ namespace Microsoft.Azure.DocumentDBStudio
             this.tabPageRequestOptions.Controls.Add(this.groupBox3);
             this.tabPageRequestOptions.Controls.Add(this.groupBox2);
             this.tabPageRequestOptions.Controls.Add(this.groupBox1);
-            this.tabPageRequestOptions.Location = new System.Drawing.Point(4, 26);
+            this.tabPageRequestOptions.Location = new System.Drawing.Point(4, 22);
             this.tabPageRequestOptions.Name = "tabPageRequestOptions";
             this.tabPageRequestOptions.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageRequestOptions.Size = new System.Drawing.Size(937, 131);
+            this.tabPageRequestOptions.Size = new System.Drawing.Size(937, 135);
             this.tabPageRequestOptions.TabIndex = 3;
             this.tabPageRequestOptions.Text = "RequestOptions";
             this.tabPageRequestOptions.UseVisualStyleBackColor = true;
@@ -607,10 +610,10 @@ namespace Microsoft.Azure.DocumentDBStudio
             this.tabDocumentCollectionPolicy.Controls.Add(this.tbCollectionId);
             this.tabDocumentCollectionPolicy.Controls.Add(this.cbIndexingPolicyDefault);
             this.tabDocumentCollectionPolicy.Controls.Add(this.cbAutomatic);
-            this.tabDocumentCollectionPolicy.Location = new System.Drawing.Point(4, 26);
+            this.tabDocumentCollectionPolicy.Location = new System.Drawing.Point(4, 22);
             this.tabDocumentCollectionPolicy.Name = "tabDocumentCollectionPolicy";
             this.tabDocumentCollectionPolicy.Padding = new System.Windows.Forms.Padding(3);
-            this.tabDocumentCollectionPolicy.Size = new System.Drawing.Size(937, 131);
+            this.tabDocumentCollectionPolicy.Size = new System.Drawing.Size(937, 135);
             this.tabDocumentCollectionPolicy.TabIndex = 4;
             this.tabDocumentCollectionPolicy.Text = "DocumentCollection";
             this.tabDocumentCollectionPolicy.UseVisualStyleBackColor = true;
@@ -851,39 +854,6 @@ namespace Microsoft.Azure.DocumentDBStudio
             this.ButtomSplitContainer.SplitterDistance = 34;
             this.ButtomSplitContainer.TabIndex = 4;
             // 
-            // triggerPanel
-            // 
-            this.triggerPanel.Controls.Add(this.rbPostTrigger);
-            this.triggerPanel.Controls.Add(this.rbPreTrigger);
-            this.triggerPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.triggerPanel.Location = new System.Drawing.Point(0, 0);
-            this.triggerPanel.Name = "triggerPanel";
-            this.triggerPanel.Size = new System.Drawing.Size(945, 34);
-            this.triggerPanel.TabIndex = 4;
-            // 
-            // rbPostTrigger
-            // 
-            this.rbPostTrigger.AutoSize = true;
-            this.rbPostTrigger.Location = new System.Drawing.Point(119, 7);
-            this.rbPostTrigger.Name = "rbPostTrigger";
-            this.rbPostTrigger.Size = new System.Drawing.Size(100, 21);
-            this.rbPostTrigger.TabIndex = 1;
-            this.rbPostTrigger.TabStop = true;
-            this.rbPostTrigger.Text = "PostTrigger";
-            this.rbPostTrigger.UseVisualStyleBackColor = true;
-            // 
-            // rbPreTrigger
-            // 
-            this.rbPreTrigger.AutoSize = true;
-            this.rbPreTrigger.Checked = true;
-            this.rbPreTrigger.Location = new System.Drawing.Point(19, 7);
-            this.rbPreTrigger.Name = "rbPreTrigger";
-            this.rbPreTrigger.Size = new System.Drawing.Size(94, 21);
-            this.rbPreTrigger.TabIndex = 0;
-            this.rbPreTrigger.TabStop = true;
-            this.rbPreTrigger.Text = "PreTrigger";
-            this.rbPreTrigger.UseVisualStyleBackColor = true;
-            // 
             // feedToolStrip
             // 
             this.feedToolStrip.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -913,6 +883,60 @@ namespace Microsoft.Azure.DocumentDBStudio
             this.btnExecuteNext.Size = new System.Drawing.Size(80, 31);
             this.btnExecuteNext.Text = "Next Page";
             this.btnExecuteNext.Click += new System.EventHandler(this.btnExecuteNext_Click);
+            // 
+            // triggerPanel
+            // 
+            this.triggerPanel.Controls.Add(this.checkBox1);
+            this.triggerPanel.Controls.Add(this.rbPostTrigger);
+            this.triggerPanel.Controls.Add(this.rbPreTrigger);
+            this.triggerPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.triggerPanel.Location = new System.Drawing.Point(0, 0);
+            this.triggerPanel.Name = "triggerPanel";
+            this.triggerPanel.Size = new System.Drawing.Size(945, 34);
+            this.triggerPanel.TabIndex = 4;
+            // 
+            // treequery
+            // 
+            this.treequery.AutoSize = true;
+            this.treequery.Location = new System.Drawing.Point(784, 4);
+            this.treequery.Name = "treequery";
+            this.treequery.Size = new System.Drawing.Size(150, 21);
+            this.treequery.TabIndex = 3;
+            this.treequery.Text = "Use Query for Tree";
+            this.treequery.UseVisualStyleBackColor = true;
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(658, 14);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(95, 21);
+            this.checkBox1.TabIndex = 2;
+            this.checkBox1.Text = "checkBox1";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
+            // rbPostTrigger
+            // 
+            this.rbPostTrigger.AutoSize = true;
+            this.rbPostTrigger.Location = new System.Drawing.Point(119, 7);
+            this.rbPostTrigger.Name = "rbPostTrigger";
+            this.rbPostTrigger.Size = new System.Drawing.Size(100, 21);
+            this.rbPostTrigger.TabIndex = 1;
+            this.rbPostTrigger.TabStop = true;
+            this.rbPostTrigger.Text = "PostTrigger";
+            this.rbPostTrigger.UseVisualStyleBackColor = true;
+            // 
+            // rbPreTrigger
+            // 
+            this.rbPreTrigger.AutoSize = true;
+            this.rbPreTrigger.Checked = true;
+            this.rbPreTrigger.Location = new System.Drawing.Point(19, 7);
+            this.rbPreTrigger.Name = "rbPreTrigger";
+            this.rbPreTrigger.Size = new System.Drawing.Size(94, 21);
+            this.rbPreTrigger.TabIndex = 0;
+            this.rbPreTrigger.TabStop = true;
+            this.rbPreTrigger.Text = "PreTrigger";
+            this.rbPreTrigger.UseVisualStyleBackColor = true;
             // 
             // webBrowserResponse
             // 
@@ -1022,7 +1046,7 @@ namespace Microsoft.Azure.DocumentDBStudio
             this.tsbViewType.Image = ((System.Drawing.Image)(resources.GetObject("tsbViewType.Image")));
             this.tsbViewType.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbViewType.Name = "tsbViewType";
-            this.tsbViewType.Size = new System.Drawing.Size(61, 22);
+            this.tsbViewType.Size = new System.Drawing.Size(60, 22);
             this.tsbViewType.Text = "Text View";
             this.tsbViewType.Click += new System.EventHandler(this.tsbViewType_Click);
             // 
@@ -1245,7 +1269,7 @@ namespace Microsoft.Azure.DocumentDBStudio
             this.tsbEditTemplate.Image = ((System.Drawing.Image)(resources.GetObject("tsbEditTemplate.Image")));
             this.tsbEditTemplate.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbEditTemplate.Name = "tsbEditTemplate";
-            this.tsbEditTemplate.Size = new System.Drawing.Size(84, 30);
+            this.tsbEditTemplate.Size = new System.Drawing.Size(83, 30);
             this.tsbEditTemplate.Text = "Edit Template";
             // 
             // MainForm
@@ -1307,10 +1331,10 @@ namespace Microsoft.Azure.DocumentDBStudio
             this.ButtomSplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.ButtomSplitContainer)).EndInit();
             this.ButtomSplitContainer.ResumeLayout(false);
-            this.triggerPanel.ResumeLayout(false);
-            this.triggerPanel.PerformLayout();
             this.feedToolStrip.ResumeLayout(false);
             this.feedToolStrip.PerformLayout();
+            this.triggerPanel.ResumeLayout(false);
+            this.triggerPanel.PerformLayout();
             this.tsMenu.ResumeLayout(false);
             this.tsMenu.PerformLayout();
             this.tsAddress.ResumeLayout(false);
@@ -1425,6 +1449,8 @@ namespace Microsoft.Azure.DocumentDBStudio
         private System.Windows.Forms.Panel triggerPanel;
         private System.Windows.Forms.RadioButton rbPostTrigger;
         private System.Windows.Forms.RadioButton rbPreTrigger;
+        private System.Windows.Forms.CheckBox treequery;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }
 

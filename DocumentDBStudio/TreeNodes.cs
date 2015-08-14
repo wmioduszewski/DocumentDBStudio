@@ -21,6 +21,7 @@ namespace Microsoft.Azure.DocumentDBStudio
     using Newtonsoft.Json;
     using Newtonsoft.Json.Serialization;
     using System.Globalization;
+    using System.Dynamic;
 
     internal class AccountSettings
     {
@@ -784,6 +785,7 @@ namespace Microsoft.Azure.DocumentDBStudio
                     }
                 }
 
+                GlobalQuery = queryText;
                 Program.GetMain().SetResultInBrowser(jsonarray, text, true, r.ResponseHeaders);
                 Program.GetMain().SetNextPageVisibility(this.currentQueryCommandContext);
             }
@@ -796,6 +798,8 @@ namespace Microsoft.Azure.DocumentDBStudio
                 Program.GetMain().SetResultInBrowser(null, e.ToString(), true);
             }
         }
+
+        public string GlobalQuery { get; set; }
 
         override public void ShowContextMenu(TreeView treeview, Point p)
         {
@@ -824,7 +828,19 @@ namespace Microsoft.Azure.DocumentDBStudio
                 FeedResponse<dynamic> docs;
                 using (PerfStatus.Start("ReadDocumentFeed"))
                 {
-                     docs = this.client.ReadDocumentFeedAsync(((Documents.DocumentCollection)this.Tag).GetLink(this.client)).Result;
+                    if (!string.IsNullOrWhiteSpace(GlobalQuery))
+                    {
+                        FeedOptions feedOptions = Program.GetMain().GetFeedOptions();
+                        var q =
+                            this.client.CreateDocumentQuery(
+                                (this.Tag as Documents.DocumentCollection).GetLink(this.client), GlobalQuery, feedOptions)
+                                .AsDocumentQuery();
+                        docs = q.ExecuteNextAsync().Result;
+                    }
+                    else
+                    {
+                        docs = this.client.ReadDocumentFeedAsync(((Documents.DocumentCollection)this.Tag).GetLink(this.client)).Result;
+                    }
                 }
 
                 foreach (var doc in docs)
@@ -858,7 +874,15 @@ namespace Microsoft.Azure.DocumentDBStudio
             this.resourceType = resoureType;
             if (this.resourceType != ResourceType.Offer)
             {
-                this.Text = (document as Documents.Resource).Id;
+                var doc = document as Document;
+                if(doc != null)
+                    this.Text = doc.Id;
+                else
+                {
+                    var jdoc = JsonConvert.DeserializeObject(document.ToString());
+                    this.Text = jdoc.GetValue("id").ToString();
+
+                }
             }
             else
             {

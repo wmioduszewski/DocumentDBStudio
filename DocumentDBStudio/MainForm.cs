@@ -1263,7 +1263,6 @@ namespace Microsoft.Azure.DocumentDBStudio
             this.offerType = "S3";
         }
 
-
     }
 
 
