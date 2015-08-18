@@ -893,9 +893,9 @@ namespace Microsoft.Azure.DocumentDBStudio
                     this.Text = doc.Id;
                 else
                 {
-                    var jdoc = JsonConvert.DeserializeObject(document.ToString());
-                    this.Text = jdoc.GetValue("id").ToString();
-
+                    doc = JsonConvert.DeserializeObject<Document>(document.ToString());
+                    document = doc;
+                    this.Text = doc.Id;
                 }
             }
             else
