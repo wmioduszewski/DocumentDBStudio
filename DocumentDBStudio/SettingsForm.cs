@@ -1,12 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using System.Configuration;
 using Microsoft.Azure.DocumentDBStudio.Properties;
 using Microsoft.Azure.Documents.Client;
 
@@ -18,90 +11,82 @@ namespace Microsoft.Azure.DocumentDBStudio
         {
             InitializeComponent();
             AccountSettings = new AccountSettings();
-
         }
 
-        internal string AccountEndpoint
-        {
-            get;
-            set;
-        }
+        internal string AccountEndpoint { get; set; }
 
-        internal AccountSettings AccountSettings
-        {
-            get;
-            set;
-        }
+        internal AccountSettings AccountSettings { get; set; }
+
         private void SettingsForm_Load(object sender, EventArgs e)
         {
-            if (!string.IsNullOrEmpty(this.AccountEndpoint))
+            if (!string.IsNullOrEmpty(AccountEndpoint))
             {
                 // load from change settings.
-                this.cbDevFabric.Enabled = false;
+                cbDevFabric.Enabled = false;
                 tbAccountName.Enabled = false;
-                tbAccountName.Text = this.AccountEndpoint;
-                tbAccountSecret.Text = this.AccountSettings.MasterKey;
+                tbAccountName.Text = AccountEndpoint;
+                tbAccountSecret.Text = AccountSettings.MasterKey;
 
-                if (this.AccountSettings.MasterKey == Constants.LocalEmulatorMasterkey)
+                if (AccountSettings.MasterKey == Constants.LocalEmulatorMasterkey)
                 {
                     cbDevFabric.Checked = true;
                 }
 
-                if (this.AccountSettings.ConnectionMode == ConnectionMode.Gateway)
+                if (AccountSettings.ConnectionMode == ConnectionMode.Gateway)
                 {
                     radioButtonGateway.Checked = true;
                 }
-                else if (this.AccountSettings.Protocol == Protocol.Https)
+                else if (AccountSettings.Protocol == Protocol.Https)
                 {
                     radioButtonDirectHttp.Checked = true;
                 }
-                else if (this.AccountSettings.Protocol == Protocol.Tcp)
+                else if (AccountSettings.Protocol == Protocol.Tcp)
                 {
                     radioButtonDirectTcp.Checked = true;
                 }
 
-                cbNameBased.Checked = this.AccountSettings.IsNameBased;
-                tbAccountName.Text = this.AccountEndpoint;
-                tbAccountSecret.Text = this.AccountSettings.MasterKey;
+                cbNameBased.Checked = AccountSettings.IsNameBased;
+                tbAccountName.Text = AccountEndpoint;
+                tbAccountSecret.Text = AccountSettings.MasterKey;
             }
             else
             {
                 radioButtonGateway.Checked = true;
 
                 // disable name based url for now.
-                this.cbNameBased.Checked = false;
+                cbNameBased.Checked = false;
                 ApplyDevFabricSettings();
             }
 
-            this.cbNameBased.Visible = true;
-            this.cbDevFabric.Visible = false;
+            cbNameBased.Visible = true;
+            cbDevFabric.Visible = false;
         }
 
         private void btnOK_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(tbAccountName.Text) || string.IsNullOrEmpty(tbAccountSecret.Text))
-                {
-                    MessageBox.Show("Please input the valid account settings", Constants.ApplicationName);
-                    this.DialogResult = DialogResult.None;
-                }
-                this.AccountEndpoint = tbAccountName.Text;
-                this.AccountSettings.MasterKey = tbAccountSecret.Text;
+            {
+                MessageBox.Show("Please input the valid account settings", Constants.ApplicationName);
+                DialogResult = DialogResult.None;
+            }
+            AccountEndpoint = tbAccountName.Text;
+            AccountSettings.MasterKey = tbAccountSecret.Text;
 
-            if (this.radioButtonGateway.Checked)
+            if (radioButtonGateway.Checked)
             {
-                this.AccountSettings.ConnectionMode = ConnectionMode.Gateway;
+                AccountSettings.ConnectionMode = ConnectionMode.Gateway;
             }
-            else if (this.radioButtonDirectHttp.Checked)
+            else if (radioButtonDirectHttp.Checked)
             {
-                this.AccountSettings.ConnectionMode = ConnectionMode.Direct;
-                this.AccountSettings.Protocol = Protocol.Https;
+                AccountSettings.ConnectionMode = ConnectionMode.Direct;
+                AccountSettings.Protocol = Protocol.Https;
             }
-            else if (this.radioButtonDirectTcp.Checked)
+            else if (radioButtonDirectTcp.Checked)
             {
-                this.AccountSettings.ConnectionMode = ConnectionMode.Direct;
-                this.AccountSettings.Protocol = Protocol.Tcp;
+                AccountSettings.ConnectionMode = ConnectionMode.Direct;
+                AccountSettings.Protocol = Protocol.Tcp;
             }
-            this.AccountSettings.IsNameBased = cbNameBased.Checked;
+            AccountSettings.IsNameBased = cbNameBased.Checked;
 
             Settings.Default.Save();
         }
@@ -110,6 +95,7 @@ namespace Microsoft.Azure.DocumentDBStudio
         {
             ApplyDevFabricSettings();
         }
+
         private void ApplyDevFabricSettings()
         {
             if (cbDevFabric.Checked)

@@ -4,16 +4,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Configuration;
 using System.Dynamic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Xml;
-using Microsoft.Azure.DocumentDBStudio.Properties;
 using Newtonsoft.Json.Linq;
-using System.Globalization;
 
 namespace Microsoft.Azure.DocumentDBStudio
 {
@@ -23,9 +18,10 @@ namespace Microsoft.Azure.DocumentDBStudio
         public readonly static string ApplicationName = "Azure DocumentDB Studio";
 
         /// <summary>
-        ///  We can enable when there is emulator.
+        ///     We can enable when there is emulator.
         /// </summary>
         public readonly static string LocalEmulatorEndpoint = "NotReleasedYet";
+
         public readonly static string LocalEmulatorMasterkey = "NotReleasedYet";
     }
 
@@ -33,6 +29,40 @@ namespace Microsoft.Azure.DocumentDBStudio
     /// </summary>
     public class Helper
     {
+        public static dynamic ConvertJTokenToDynamic(JToken token)
+        {
+            if (token is JValue)
+            {
+                return ((JValue) token).Value;
+            }
+            if (token is JObject)
+            {
+                ExpandoObject expando = new ExpandoObject();
+                (from childToken in ((JToken) token) where childToken is JProperty select childToken as JProperty)
+                    .ToList()
+                    .ForEach(
+                        property =>
+                        {
+                            ((IDictionary<string, object>) expando).Add(property.Name,
+                                ConvertJTokenToDynamic(property.Value));
+                        });
+                return expando;
+            }
+            if (token is JArray)
+            {
+                object[] array = new object[((JArray) token).Count];
+                int index = 0;
+                foreach (JToken arrayItem in ((JArray) token))
+                {
+                    array[index] = ConvertJTokenToDynamic(arrayItem);
+                    index++;
+                }
+                return array;
+            }
+            throw new ArgumentException(
+                string.Format(CultureInfo.InvariantCulture, "Unknown token type '{0}'", token.GetType()), "token");
+        }
+
         static internal string FormatTextAsHtml(string text, bool encodeWhitespace)
         {
             return FormatTextAsHtml(text, encodeWhitespace, true);
@@ -73,35 +103,5 @@ namespace Microsoft.Azure.DocumentDBStudio
 
             return html;
         }
-
-        public static dynamic ConvertJTokenToDynamic(JToken token)
-        {
-            if (token is JValue)
-            {
-                return ((JValue)token).Value;
-            }
-            if (token is JObject)
-            {
-                ExpandoObject expando = new ExpandoObject();
-                (from childToken in ((JToken)token) where childToken is JProperty select childToken as JProperty).ToList().ForEach(property =>
-                {
-                    ((IDictionary<string, object>)expando).Add(property.Name, ConvertJTokenToDynamic(property.Value));
-                });
-                return expando;
-            }
-            if (token is JArray)
-            {
-                object[] array = new object[((JArray)token).Count];
-                int index = 0;
-                foreach (JToken arrayItem in ((JArray)token))
-                {
-                    array[index] = ConvertJTokenToDynamic(arrayItem);
-                    index++;
-                }
-                return array;
-            }
-            throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, "Unknown token type '{0}'", token.GetType()), "token");
-        }
     }
-
 }

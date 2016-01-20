@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Azure.Documents;
 
@@ -20,23 +13,23 @@ namespace Microsoft.Azure.DocumentDBStudio
             InitializeComponent();
         }
 
+        public IncludedPath IncludedPath
+        {
+            get { return includedPath; }
+        }
+
         public void SetIncludedPath(IncludedPath includedPath)
         {
             this.includedPath = includedPath;
 
             // init the path
             tbIncludedPathPath.Text = includedPath.Path;
-            this.lbIndexes.Items.Clear();
+            lbIndexes.Items.Clear();
 
             foreach (Index index in includedPath.Indexes)
             {
-                this.lbIndexes.Items.Add(index);
+                lbIndexes.Items.Add(index);
             }
-        }
-
-        public IncludedPath IncludedPath
-        {
-            get { return this.includedPath; }
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -44,21 +37,21 @@ namespace Microsoft.Azure.DocumentDBStudio
             if (string.IsNullOrEmpty(tbIncludedPathPath.Text))
             {
                 MessageBox.Show("Please input the valid path");
-                this.DialogResult = DialogResult.None;
+                DialogResult = DialogResult.None;
                 return;
             }
 
-            this.includedPath = new IncludedPath();
+            includedPath = new IncludedPath();
 
             includedPath.Path = tbIncludedPathPath.Text;
 
-            foreach (object item in this.lbIndexes.Items)
+            foreach (object item in lbIndexes.Items)
             {
                 Index index = item as Index;
-                this.includedPath.Indexes.Add(index);
+                includedPath.Indexes.Add(index);
             }
 
-            this.DialogResult = DialogResult.OK;
+            DialogResult = DialogResult.OK;
             return;
         }
 
@@ -69,18 +62,18 @@ namespace Microsoft.Azure.DocumentDBStudio
             DialogResult dr = dlg.ShowDialog(this);
             if (dr == DialogResult.OK)
             {
-                this.lbIndexes.Items.Add(dlg.Index);
+                lbIndexes.Items.Add(dlg.Index);
             }
         }
 
         private void btnRemoveIndexSpec_Click(object sender, EventArgs e)
         {
-            this.lbIndexes.Items.RemoveAt(this.lbIndexes.SelectedIndex);
+            lbIndexes.Items.RemoveAt(lbIndexes.SelectedIndex);
         }
 
         private void btnEditIndexSpec_Click(object sender, EventArgs e)
         {
-            Index index = this.lbIndexes.SelectedItem as Index;
+            Index index = lbIndexes.SelectedItem as Index;
 
             IndexSpecsForm dlg = new IndexSpecsForm();
             dlg.StartPosition = FormStartPosition.CenterParent;
@@ -90,21 +83,21 @@ namespace Microsoft.Azure.DocumentDBStudio
             DialogResult dr = dlg.ShowDialog(this);
             if (dr == DialogResult.OK)
             {
-                this.lbIndexes.Items[this.lbIndexes.SelectedIndex] = dlg.Index;
+                lbIndexes.Items[lbIndexes.SelectedIndex] = dlg.Index;
             }
         }
 
         private void lbIndexes_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (this.lbIndexes.SelectedItem != null)
+            if (lbIndexes.SelectedItem != null)
             {
-                this.btnEditIndexSpec.Enabled = true;
-                this.btnRemoveIndexSpec.Enabled = true;
+                btnEditIndexSpec.Enabled = true;
+                btnRemoveIndexSpec.Enabled = true;
             }
             else
             {
-                this.btnEditIndexSpec.Enabled = false;
-                this.btnRemoveIndexSpec.Enabled = false;
+                btnEditIndexSpec.Enabled = false;
+                btnRemoveIndexSpec.Enabled = false;
             }
         }
     }
