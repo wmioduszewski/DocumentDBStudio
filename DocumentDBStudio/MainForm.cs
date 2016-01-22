@@ -14,6 +14,7 @@ using System.Net.Http.Headers;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
+using Microsoft.Azure.DocumentDBStudio.Forms;
 using Microsoft.Azure.DocumentDBStudio.Properties;
 using Microsoft.Azure.DocumentDBStudio.TreeNodeElems;
 using Microsoft.Azure.DocumentDBStudio.Util;

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 
-namespace Microsoft.Azure.DocumentDBStudio
+namespace Microsoft.Azure.DocumentDBStudio.Util
 {
     public static class ReflectionHelper
     {
@@ -54,7 +54,7 @@ namespace Microsoft.Azure.DocumentDBStudio
     /// </summary>
     internal static class DocumentClientExtension
     {
-        static Dictionary<string, bool> NameRoutingMap = new Dictionary<string, bool>();
+        private static readonly Dictionary<string, bool> NameRoutingMap = new Dictionary<string, bool>();
 
         public static string GetAltLink(this Resource resource)
         {
@@ -69,13 +69,13 @@ namespace Microsoft.Azure.DocumentDBStudio
             }
         }
 
-        internal static void AddOrUpdate(string endpoint, bool IsNameBased)
+        internal static void AddOrUpdate(string endpoint, bool isNameBased)
         {
             if (NameRoutingMap.ContainsKey(endpoint))
             {
                 NameRoutingMap.Remove(endpoint);
             }
-            NameRoutingMap.Add(endpoint, IsNameBased);
+            NameRoutingMap.Add(endpoint, isNameBased);
         }
 
         /// <summary>
@@ -88,10 +88,7 @@ namespace Microsoft.Azure.DocumentDBStudio
             {
                 return GetAltLink(resource);
             }
-            else
-            {
-                return resource.SelfLink;
-            }
+            return resource.SelfLink;
         }
 
         /// <summary>

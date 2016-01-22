@@ -14,15 +14,15 @@ namespace Microsoft.Azure.DocumentDBStudio
 {
     static class Constants
     {
-        public readonly static string ProductVersion = "0.61";
-        public readonly static string ApplicationName = "Azure DocumentDB Studio";
+        public static readonly string ProductVersion = "0.61";
+        public static readonly string ApplicationName = "Azure DocumentDB Studio";
 
         /// <summary>
         ///     We can enable when there is emulator.
         /// </summary>
-        public readonly static string LocalEmulatorEndpoint = "NotReleasedYet";
+        public static readonly string LocalEmulatorEndpoint = "NotReleasedYet";
 
-        public readonly static string LocalEmulatorMasterkey = "NotReleasedYet";
+        public static readonly string LocalEmulatorMasterkey = "NotReleasedYet";
     }
 
     /// <summary>
@@ -38,7 +38,7 @@ namespace Microsoft.Azure.DocumentDBStudio
             if (token is JObject)
             {
                 ExpandoObject expando = new ExpandoObject();
-                (from childToken in ((JToken) token) where childToken is JProperty select childToken as JProperty)
+                (from childToken in token where childToken is JProperty select childToken as JProperty)
                     .ToList()
                     .ForEach(
                         property =>
@@ -63,12 +63,12 @@ namespace Microsoft.Azure.DocumentDBStudio
                 string.Format(CultureInfo.InvariantCulture, "Unknown token type '{0}'", token.GetType()), "token");
         }
 
-        static internal string FormatTextAsHtml(string text, bool encodeWhitespace)
+        internal static string FormatTextAsHtml(string text, bool encodeWhitespace)
         {
             return FormatTextAsHtml(text, encodeWhitespace, true);
         }
 
-        static internal string FormatTextAsHtml(string text, bool encodeWhitespace, bool includeBodyTags)
+        internal static string FormatTextAsHtml(string text, bool encodeWhitespace, bool includeBodyTags)
         {
             // There must be a BCL function that will do this correctly...
             string html;

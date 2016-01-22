@@ -4,7 +4,7 @@ using Microsoft.Azure.DocumentDBStudio.Properties;
 using Microsoft.Azure.DocumentDBStudio.Util;
 using Microsoft.Azure.Documents.Client;
 
-namespace Microsoft.Azure.DocumentDBStudio
+namespace Microsoft.Azure.DocumentDBStudio.Forms
 {
     public partial class SettingsForm : Form
     {

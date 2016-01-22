@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace Microsoft.Azure.DocumentDBStudio
+namespace Microsoft.Azure.DocumentDBStudio.Forms
 {
     public partial class ExcludedPathForm : Form
     {

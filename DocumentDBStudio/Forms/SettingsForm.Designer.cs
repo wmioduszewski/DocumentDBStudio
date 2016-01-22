@@ -1,4 +1,4 @@
-﻿namespace Microsoft.Azure.DocumentDBStudio
+﻿namespace Microsoft.Azure.DocumentDBStudio.Forms
 {
     partial class SettingsForm
     {

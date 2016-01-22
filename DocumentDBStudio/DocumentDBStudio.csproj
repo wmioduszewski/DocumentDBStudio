@@ -119,23 +119,23 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DocumentClientExtension.cs" />
-    <Compile Include="ExcludedPathForm.cs">
+    <Compile Include="Util\DocumentClientExtension.cs" />
+    <Compile Include="Forms\ExcludedPathForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ExcludedPathForm.Designer.cs">
+    <Compile Include="Forms\ExcludedPathForm.Designer.cs">
       <DependentUpon>ExcludedPathForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="IncludedPathForm.cs">
+    <Compile Include="Forms\IncludedPathForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="IncludedPathForm.Designer.cs">
+    <Compile Include="Forms\IncludedPathForm.Designer.cs">
       <DependentUpon>IncludedPathForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="IndexSpecsForm.cs">
+    <Compile Include="Forms\IndexSpecsForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="IndexSpecsForm.Designer.cs">
+    <Compile Include="Forms\IndexSpecsForm.Designer.cs">
       <DependentUpon>IndexSpecsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="MainForm.cs">
@@ -162,10 +162,10 @@
     <Compile Include="TreeNodeElems\TriggersNode.cs" />
     <Compile Include="TreeNodeElems\UdfNode.cs" />
     <Compile Include="TreeNodeElems\UsersNode.cs" />
-    <Compile Include="SettingsForm.cs">
+    <Compile Include="Forms\SettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SettingsForm.Designer.cs">
+    <Compile Include="Forms\SettingsForm.Designer.cs">
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
@@ -173,13 +173,13 @@
     <Compile Include="Util\AccountSettings.cs" />
     <Compile Include="Util\CommandContext.cs" />
     <Compile Include="Util\ResourceType.cs" />
-    <EmbeddedResource Include="ExcludedPathForm.resx">
+    <EmbeddedResource Include="Forms\ExcludedPathForm.resx">
       <DependentUpon>ExcludedPathForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="IncludedPathForm.resx">
+    <EmbeddedResource Include="Forms\IncludedPathForm.resx">
       <DependentUpon>IncludedPathForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="IndexSpecsForm.resx">
+    <EmbeddedResource Include="Forms\IndexSpecsForm.resx">
       <DependentUpon>IndexSpecsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
@@ -225,7 +225,7 @@
     <Content Include="Resources\special_offer.png" />
     <Content Include="Resources\SystemFeed.png" />
     <Content Include="Resources\User.png" />
-    <EmbeddedResource Include="SettingsForm.resx">
+    <EmbeddedResource Include="Forms\SettingsForm.resx">
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\home.html" />

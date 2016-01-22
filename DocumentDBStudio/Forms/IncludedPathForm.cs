@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 using Microsoft.Azure.Documents;
 
-namespace Microsoft.Azure.DocumentDBStudio
+namespace Microsoft.Azure.DocumentDBStudio.Forms
 {
     public partial class IncludedPathForm : Form
     {
