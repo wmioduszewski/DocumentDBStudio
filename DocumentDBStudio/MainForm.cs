@@ -15,6 +15,8 @@ using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 using Microsoft.Azure.DocumentDBStudio.Properties;
+using Microsoft.Azure.DocumentDBStudio.TreeNodeElems;
+using Microsoft.Azure.DocumentDBStudio.Util;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Newtonsoft.Json;
@@ -845,9 +847,9 @@ namespace Microsoft.Azure.DocumentDBStudio
 
         private void treeView1_BeforeExpand(object sender, TreeViewCancelEventArgs e)
         {
-            if (e.Node is FeedNode)
+            if (e.Node is NodeBase)
             {
-                (e.Node as FeedNode).Refresh(false);
+                (e.Node as NodeBase).Refresh(false);
             }
         }
 
@@ -855,9 +857,9 @@ namespace Microsoft.Azure.DocumentDBStudio
         {
             if (e.Button == MouseButtons.Right)
             {
-                if (e.Node is FeedNode)
+                if (e.Node is NodeBase)
                 {
-                    (e.Node as FeedNode).ShowContextMenu(e.Node.TreeView, e.Location);
+                    (e.Node as NodeBase).ShowContextMenu(e.Node.TreeView, e.Location);
                 }
             }
             else if (e.Button == MouseButtons.Left)
@@ -868,8 +870,8 @@ namespace Microsoft.Azure.DocumentDBStudio
 
                 if (e.Node is DocumentNode)
                 {
-                    DocumentNode node = e.Node as DocumentNode;
-                    string body = node.GetBody();
+                    DocumentNode nodeBase = e.Node as DocumentNode;
+                    string body = nodeBase.GetBody();
 
                     if (!string.IsNullOrEmpty(body))
                     {

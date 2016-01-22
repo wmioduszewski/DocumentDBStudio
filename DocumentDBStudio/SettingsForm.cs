@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using Microsoft.Azure.DocumentDBStudio.Properties;
+using Microsoft.Azure.DocumentDBStudio.Util;
 using Microsoft.Azure.Documents.Client;
 
 namespace Microsoft.Azure.DocumentDBStudio
