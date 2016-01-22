@@ -421,7 +421,7 @@ namespace Microsoft.Azure.DocumentDBStudio
             imageList.Images.Add("SystemFeed", Resources.SystemFeedpng);
             imageList.Images.Add("Attachment", Resources.Attachmentpng);
             imageList.Images.Add("Conflict", Resources.Conflictpng);
-            imageList.Images.Add("Offer", Resources.Offerpng);
+            imageList.Images.Add("Offer", Resources.SpecialOfferpng);
             treeView1.ImageList = imageList;
 
             InitTreeView();
