@@ -6,6 +6,7 @@ using System.Dynamic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Azure.DocumentDBStudio.Util;
 using Microsoft.Azure.Documents;
@@ -171,7 +172,7 @@ namespace Microsoft.Azure.DocumentDBStudio.TreeNodeElems
                 .SetCrudContext(this, "Replace DocumentCollection", false, x, UpdateDocumentCollection, context);
         }
 
-        async void UpdateDocumentCollection(string text, object optional)
+        async Task UpdateDocumentCollection(string text, object optional)
         {
             try
             {
@@ -229,7 +230,7 @@ namespace Microsoft.Azure.DocumentDBStudio.TreeNodeElems
             }
         }
 
-        async void DeleteDocumentCollection(string text, object optional)
+        async Task DeleteDocumentCollection(string text, object optional)
         {
             try
             {
@@ -346,7 +347,7 @@ namespace Microsoft.Azure.DocumentDBStudio.TreeNodeElems
         }
 
 
-        async void AddDocument(string text, object optional)
+        async Task AddDocument(string text, object optional)
         {
             try
             {
@@ -378,7 +379,7 @@ namespace Microsoft.Azure.DocumentDBStudio.TreeNodeElems
             }
         }
 
-        async void QueryDocuments(string queryText, object optional)
+        async Task QueryDocuments(string queryText, object optional)
         {
             try
             {

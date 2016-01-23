@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Dynamic;
 using System.Globalization;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
@@ -101,7 +102,7 @@ namespace Microsoft.Azure.DocumentDBStudio.TreeNodeElems
             Program.GetMain().RemoveAccountFromSettings(_accountEndpoint);
         }
 
-        async void QueryDatabases(string queryText, object optional)
+        async Task QueryDatabases(string queryText, object optional)
         {
             try
             {
@@ -154,7 +155,7 @@ namespace Microsoft.Azure.DocumentDBStudio.TreeNodeElems
             }
         }
 
-        private async void FillWithChildren()
+        private async Task FillWithChildren()
         {
             try
             {
@@ -184,7 +185,7 @@ namespace Microsoft.Azure.DocumentDBStudio.TreeNodeElems
             }
         }
 
-        async void AddDatabase(string text, object optional)
+        async Task AddDatabase(string text, object optional)
         {
             try
             {

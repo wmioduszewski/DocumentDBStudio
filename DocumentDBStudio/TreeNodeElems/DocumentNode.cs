@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Azure.DocumentDBStudio.Util;
 using Microsoft.Azure.Documents;
@@ -527,7 +528,7 @@ namespace Microsoft.Azure.DocumentDBStudio.TreeNodeElems
             Program.GetMain().SetCrudContext(this, "Delete " + _resourceType, false, x, DeleteNode, context);
         }
 
-        async void AddAttachment(string text, object optional)
+        async Task AddAttachment(string text, object optional)
         {
             try
             {
@@ -555,7 +556,7 @@ namespace Microsoft.Azure.DocumentDBStudio.TreeNodeElems
             }
         }
 
-        async void ExecuteStoredProcedure(string text, object optional)
+        async Task ExecuteStoredProcedure(string text, object optional)
         {
             try
             {
@@ -603,7 +604,7 @@ namespace Microsoft.Azure.DocumentDBStudio.TreeNodeElems
             }
         }
 
-        async void UpdateNode(string text, object optionalObject)
+        async Task UpdateNode(string text, object optionalObject)
         {
             string optional = optionalObject as string;
             try
@@ -741,7 +742,7 @@ namespace Microsoft.Azure.DocumentDBStudio.TreeNodeElems
             }
         }
 
-        async void DeleteNode(string text, object optional)
+        async Task DeleteNode(string text, object optional)
         {
             try
             {

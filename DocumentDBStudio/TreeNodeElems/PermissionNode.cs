@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Azure.DocumentDBStudio.Util;
 using Microsoft.Azure.Documents;
@@ -90,7 +91,7 @@ namespace Microsoft.Azure.DocumentDBStudio.TreeNodeElems
                     false, x, AddPermission);
         }
 
-        async void AddPermission(string body, object id)
+        async Task AddPermission(string body, object id)
         {
             try
             {

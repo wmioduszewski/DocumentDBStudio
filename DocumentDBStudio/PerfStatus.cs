@@ -6,26 +6,26 @@ namespace Microsoft.Azure.DocumentDBStudio
 {
     class PerfStatus : IDisposable
     {
-        string name;
-        Stopwatch watch;
+        private readonly string _name;
+        private readonly Stopwatch _watch;
 
         private PerfStatus(string name)
         {
-            this.name = name;
-            watch = new Stopwatch();
-            watch.Start();
+            _name = name;
+            _watch = new Stopwatch();
+            _watch.Start();
         }
 
         #region IDisposable implementation
 
-        // dispose stops stopwatch and prints time, could do anytying here
+        // dispose stops stopwatch and prints time, could do anything here
         public void Dispose()
         {
-            watch.Stop();
+            _watch.Stop();
 
             Program.GetMain()
-                .SetStatus(string.Format(CultureInfo.InvariantCulture, "{0}: {1}ms", name,
-                    watch.Elapsed.TotalMilliseconds));
+                .SetStatus(string.Format(CultureInfo.InvariantCulture, "{0}: {1}ms", _name,
+                    _watch.Elapsed.TotalMilliseconds));
         }
 
         #endregion

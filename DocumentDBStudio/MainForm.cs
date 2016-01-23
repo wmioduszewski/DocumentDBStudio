@@ -13,6 +13,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Azure.DocumentDBStudio.Forms;
 using Microsoft.Azure.DocumentDBStudio.Properties;
@@ -27,25 +28,25 @@ namespace Microsoft.Azure.DocumentDBStudio
 {
     public partial class MainForm : Form
     {
-        private string appTempPath;
-        CheckBox cbEnableScan;
+        private string _appTempPath;
+        CheckBox _cbEnableScan;
 
-        private DocumentCollection collectionToCreate;
+        private DocumentCollection _collectionToCreate;
 
-        private String currentCrudName;
+        private String _currentCrudName;
 
-        private string currentJson;
-        Action<string, object> currentOperation;
-        private string currentText;
+        private string _currentJson;
+        Func<string, object, Task> _currentOperation;
+        private string _currentText;
         private int defaultFontPoint = 9;
-        private int fontScale = 100;
-        private string homepage;
+        private int _fontScale = 100;
+        private string _homepage;
 
-        private string loadingGifPath;
-        private String offerType;
-        private string prettyJSONTemplate;
+        private string _loadingGifPath;
+        private String _offerType;
+        private string _prettyJsonTemplate;
 
-        private RequestOptions requestOptions;
+        private RequestOptions _requestOptions;
 
         public MainForm()
         {
@@ -68,9 +69,11 @@ namespace Microsoft.Azure.DocumentDBStudio
                                 typeof (AccountSettings));
 
                     // Bring up account setings dialog
-                    SettingsForm dlg = new SettingsForm();
-                    dlg.AccountEndpoint = accountEndpoint;
-                    dlg.AccountSettings = accountSettings;
+                    SettingsForm dlg = new SettingsForm
+                    {
+                        AccountEndpoint = accountEndpoint,
+                        AccountSettings = accountSettings
+                    };
 
                     DialogResult dr = dlg.ShowDialog(this);
                     if (dr == DialogResult.OK)
@@ -120,11 +123,11 @@ namespace Microsoft.Azure.DocumentDBStudio
                 // Ignore the exception and use the defualt value
             }
 
-            if (cbEnableScan.CheckState == CheckState.Checked)
+            if (_cbEnableScan.CheckState == CheckState.Checked)
             {
                 feedOptions.EnableScanInQuery = true;
             }
-            else if (cbEnableScan.CheckState == CheckState.Unchecked)
+            else if (_cbEnableScan.CheckState == CheckState.Unchecked)
             {
                 feedOptions.EnableScanInQuery = false;
             }
@@ -134,7 +137,7 @@ namespace Microsoft.Azure.DocumentDBStudio
 
         public RequestOptions GetRequestOptions(bool isCollection = false)
         {
-            if (this.requestOptions != null)
+            if (this._requestOptions != null)
             {
                 if (tbPostTrigger.Modified)
                 {
@@ -143,7 +146,7 @@ namespace Microsoft.Azure.DocumentDBStudio
                     {
                         // split by ;
                         string[] segments = postTrigger.Split(new char[] {';'}, StringSplitOptions.RemoveEmptyEntries);
-                        this.requestOptions.PostTriggerInclude = segments;
+                        this._requestOptions.PostTriggerInclude = segments;
                     }
                     tbPostTrigger.Modified = false;
                 }
@@ -155,7 +158,7 @@ namespace Microsoft.Azure.DocumentDBStudio
                     {
                         // split by ;
                         string[] segments = preTrigger.Split(new char[] {';'}, StringSplitOptions.RemoveEmptyEntries);
-                        this.requestOptions.PreTriggerInclude = segments;
+                        this._requestOptions.PreTriggerInclude = segments;
                     }
                 }
                 if (tbAccessConditionText.Modified)
@@ -163,22 +166,22 @@ namespace Microsoft.Azure.DocumentDBStudio
                     string condition = tbAccessConditionText.Text;
                     if (!string.IsNullOrEmpty(condition))
                     {
-                        this.requestOptions.AccessCondition.Condition = condition;
+                        this._requestOptions.AccessCondition.Condition = condition;
                     }
                 }
             }
 
-            RequestOptions requestOptions = this.requestOptions;
+            RequestOptions requestOptions = this._requestOptions;
 
             if (isCollection)
             {
                 if (requestOptions != null)
                 {
-                    requestOptions.OfferType = offerType;
+                    requestOptions.OfferType = _offerType;
                 }
                 else
                 {
-                    requestOptions = new RequestOptions() {OfferType = offerType};
+                    requestOptions = new RequestOptions() {OfferType = _offerType};
                 }
             }
 
@@ -201,7 +204,7 @@ namespace Microsoft.Azure.DocumentDBStudio
                         Method = HttpMethod.Get,
                     };
                     request.Headers.UserAgent.Add(new ProductInfoHeaderValue("DocumentDBStudio",
-                        Constants.ProductVersion.ToString()));
+                        Constants.ProductVersion));
 
                     HttpResponseMessage response = client.SendAsync(request).Result;
 
@@ -231,19 +234,18 @@ namespace Microsoft.Azure.DocumentDBStudio
             }
         }
 
-        public void SetCrudContext(TreeNode node, string name, bool showId, string bodytext, Action<string, object> func,
+        public void SetCrudContext(TreeNode node, string name, bool showId, string bodytext, Func<string, object, Task> func,
             CommandContext commandContext = null)
         {
             if (commandContext == null)
             {
                 commandContext = new CommandContext();
             }
-
             treeView1.SelectedNode = node;
 
-            currentCrudName = name;
-
-            currentOperation = func;
+            _currentCrudName = name;
+            _currentOperation = func;
+            
             tabCrudContext.Text = name;
             tbCrudContext.Text = bodytext;
 
@@ -317,7 +319,7 @@ namespace Microsoft.Azure.DocumentDBStudio
         public void SetLoadingState()
         {
             //
-            webBrowserResponse.Url = new Uri(loadingGifPath);
+            webBrowserResponse.Url = new Uri(_loadingGifPath);
         }
 
         public void RenderFile(string fileName)
@@ -329,8 +331,8 @@ namespace Microsoft.Azure.DocumentDBStudio
         public void SetResultInBrowser(string json, string text, bool executeButtonEnabled,
             NameValueCollection responseHeaders = null)
         {
-            currentText = text;
-            currentJson = json;
+            _currentText = text;
+            _currentJson = json;
             DisplayResponseContent();
 
             toolStripBtnExecute.Enabled = executeButtonEnabled;
@@ -384,14 +386,14 @@ namespace Microsoft.Azure.DocumentDBStudio
             {
                 using (StreamReader reader = new StreamReader(stm))
                 {
-                    homepage = reader.ReadToEnd();
+                    _homepage = reader.ReadToEnd();
                 }
             }
-            homepage = homepage.Replace("&VERSION&", Constants.ProductVersion);
+            _homepage = _homepage.Replace("&VERSION&", Constants.ProductVersion);
 
             DateTime t = File.GetLastWriteTime(Assembly.GetExecutingAssembly().Location);
             DateTimeOffset dateOffset = new DateTimeOffset(t, TimeZoneInfo.Local.GetUtcOffset(t));
-            homepage = homepage.Replace("&BUILDTIME&", t.ToString("f", CultureInfo.CurrentCulture));
+            _homepage = _homepage.Replace("&BUILDTIME&", t.ToString("f", CultureInfo.CurrentCulture));
 
             cbUrl.Items.Add("about:home");
             cbUrl.SelectedIndex = 0;
@@ -443,10 +445,10 @@ namespace Microsoft.Azure.DocumentDBStudio
             cbRequestOptionsApply_CheckedChanged(null, null);
             cbIndexingPolicyDefault_CheckedChanged(null, null);
 
-            cbEnableScan = new CheckBox();
-            cbEnableScan.Text = "EnableScanInQuery";
-            cbEnableScan.CheckState = CheckState.Indeterminate;
-            ToolStripControlHost host = new ToolStripControlHost(cbEnableScan);
+            _cbEnableScan = new CheckBox();
+            _cbEnableScan.Text = "EnableScanInQuery";
+            _cbEnableScan.CheckState = CheckState.Indeterminate;
+            ToolStripControlHost host = new ToolStripControlHost(_cbEnableScan);
             feedToolStrip.Items.Insert(1, host);
 
             lbIncludedPath.Items.Add(new IncludedPath() {Path = "/"});
@@ -455,22 +457,22 @@ namespace Microsoft.Azure.DocumentDBStudio
 
         private void UnpackEmbeddedResources()
         {
-            appTempPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            _appTempPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 "DocumentDBStudio");
 
-            if (!Directory.Exists(appTempPath))
+            if (!Directory.Exists(_appTempPath))
             {
-                Directory.CreateDirectory(appTempPath);
+                Directory.CreateDirectory(_appTempPath);
             }
 
-            loadingGifPath = Path.Combine(appTempPath, "loading.gif");
+            _loadingGifPath = Path.Combine(_appTempPath, "loading.gif");
 
             using (
                 Stream stream =
                     Assembly.GetExecutingAssembly()
                         .GetManifestResourceStream("Microsoft.Azure.DocumentDBStudio.Resources.loading.gif"))
             {
-                using (FileStream fileStream = File.Create(loadingGifPath))
+                using (FileStream fileStream = File.Create(_loadingGifPath))
                 {
                     stream.CopyTo(fileStream);
                 }
@@ -482,7 +484,7 @@ namespace Microsoft.Azure.DocumentDBStudio
                         .GetManifestResourceStream(
                             "Microsoft.Azure.DocumentDBStudio.Resources.prettyJSON.backbone-min.js"))
             {
-                using (FileStream fileStream = File.Create(Path.Combine(appTempPath, "backbone-min.js")))
+                using (FileStream fileStream = File.Create(Path.Combine(_appTempPath, "backbone-min.js")))
                 {
                     stream.CopyTo(fileStream);
                 }
@@ -493,7 +495,7 @@ namespace Microsoft.Azure.DocumentDBStudio
                         .GetManifestResourceStream(
                             "Microsoft.Azure.DocumentDBStudio.Resources.prettyJSON.jquery-1.11.1.min.js"))
             {
-                using (FileStream fileStream = File.Create(Path.Combine(appTempPath, "jquery-1.11.1.min.js")))
+                using (FileStream fileStream = File.Create(Path.Combine(_appTempPath, "jquery-1.11.1.min.js")))
                 {
                     stream.CopyTo(fileStream);
                 }
@@ -504,7 +506,7 @@ namespace Microsoft.Azure.DocumentDBStudio
                         .GetManifestResourceStream(
                             "Microsoft.Azure.DocumentDBStudio.Resources.prettyJSON.pretty-json.css"))
             {
-                using (FileStream fileStream = File.Create(Path.Combine(appTempPath, "pretty-json.css")))
+                using (FileStream fileStream = File.Create(Path.Combine(_appTempPath, "pretty-json.css")))
                 {
                     stream.CopyTo(fileStream);
                 }
@@ -515,7 +517,7 @@ namespace Microsoft.Azure.DocumentDBStudio
                         .GetManifestResourceStream(
                             "Microsoft.Azure.DocumentDBStudio.Resources.prettyJSON.pretty-json-min.js"))
             {
-                using (FileStream fileStream = File.Create(Path.Combine(appTempPath, "pretty-json-min.js")))
+                using (FileStream fileStream = File.Create(Path.Combine(_appTempPath, "pretty-json-min.js")))
                 {
                     stream.CopyTo(fileStream);
                 }
@@ -526,7 +528,7 @@ namespace Microsoft.Azure.DocumentDBStudio
                         .GetManifestResourceStream(
                             "Microsoft.Azure.DocumentDBStudio.Resources.prettyJSON.underscore-min.js"))
             {
-                using (FileStream fileStream = File.Create(Path.Combine(appTempPath, "underscore-min.js")))
+                using (FileStream fileStream = File.Create(Path.Combine(_appTempPath, "underscore-min.js")))
                 {
                     stream.CopyTo(fileStream);
                 }
@@ -540,7 +542,7 @@ namespace Microsoft.Azure.DocumentDBStudio
             {
                 using (StreamReader reader = new StreamReader(stream))
                 {
-                    prettyJSONTemplate = reader.ReadToEnd();
+                    _prettyJsonTemplate = reader.ReadToEnd();
                 }
             }
         }
@@ -634,19 +636,19 @@ namespace Microsoft.Azure.DocumentDBStudio
         {
             if (tsbViewType.Checked)
             {
-                PrettyPrintJson(currentJson, currentText);
+                PrettyPrintJson(_currentJson, _currentText);
             }
             else
             {
                 string htmlResponse = "";
 
-                if (!string.IsNullOrEmpty(currentJson))
+                if (!string.IsNullOrEmpty(_currentJson))
                 {
-                    htmlResponse = Helper.FormatTextAsHtml(currentJson, false);
+                    htmlResponse = Helper.FormatTextAsHtml(_currentJson, false);
                 }
-                if (!string.IsNullOrEmpty(currentText))
+                if (!string.IsNullOrEmpty(_currentText))
                 {
-                    htmlResponse += "\r\n\r\n" + Helper.FormatTextAsHtml(currentText, false);
+                    htmlResponse += "\r\n\r\n" + Helper.FormatTextAsHtml(_currentText, false);
                 }
                 DisplayHtmlContentInScale(htmlResponse);
             }
@@ -654,10 +656,10 @@ namespace Microsoft.Azure.DocumentDBStudio
 
         void DisplayHtmlContentInScale(string htmlResponse)
         {
-            if (fontScale != 100)
+            if (_fontScale != 100)
             {
                 // current scaled font
-                float fontPt = defaultFontPoint*(fontScale/100.0f);
+                float fontPt = defaultFontPoint*(_fontScale/100.0f);
 
                 // todo: make this a well defined class
                 string style = "{ font-size: " + fontPt + "pt; }";
@@ -675,22 +677,22 @@ namespace Microsoft.Azure.DocumentDBStudio
             switch (tsButtonZoom.Text)
             {
                 case "100%":
-                    fontScale = 125;
+                    _fontScale = 125;
                     break;
                 case "125%":
-                    fontScale = 150;
+                    _fontScale = 150;
                     break;
                 case "150%":
-                    fontScale = 175;
+                    _fontScale = 175;
                     break;
                 case "175%":
-                    fontScale = 100;
+                    _fontScale = 100;
                     break;
             }
-            tsButtonZoom.Text = fontScale.ToString(CultureInfo.CurrentCulture) + "%";
-            tbRequest.Font = new Font(tbRequest.Font.FontFamily.Name, defaultFontPoint*(fontScale/100.0f));
-            tbResponse.Font = new Font(tbResponse.Font.FontFamily.Name, defaultFontPoint*(fontScale/100.0f));
-            Font = new Font(tbResponse.Font.FontFamily.Name, defaultFontPoint*(fontScale/100.0f));
+            tsButtonZoom.Text = _fontScale.ToString(CultureInfo.CurrentCulture) + "%";
+            tbRequest.Font = new Font(tbRequest.Font.FontFamily.Name, defaultFontPoint*(_fontScale/100.0f));
+            tbResponse.Font = new Font(tbResponse.Font.FontFamily.Name, defaultFontPoint*(_fontScale/100.0f));
+            Font = new Font(tbResponse.Font.FontFamily.Name, defaultFontPoint*(_fontScale/100.0f));
 
             // we don't support pretty print for font scaling yet.
             if (!tsbViewType.Checked)
@@ -720,7 +722,7 @@ namespace Microsoft.Azure.DocumentDBStudio
         private void btnHome_Click(object sender, EventArgs e)
         {
             //
-            DisplayHtmlContentInScale(homepage);
+            DisplayHtmlContentInScale(_homepage);
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -866,8 +868,8 @@ namespace Microsoft.Azure.DocumentDBStudio
             else if (e.Button == MouseButtons.Left)
             {
                 // render the JSON in the right panel.
-                currentText = null;
-                currentJson = null;
+                _currentText = null;
+                _currentJson = null;
 
                 if (e.Node is DocumentNode)
                 {
@@ -876,26 +878,26 @@ namespace Microsoft.Azure.DocumentDBStudio
 
                     if (!string.IsNullOrEmpty(body))
                     {
-                        currentText = body;
+                        _currentText = body;
                     }
                 }
 
                 if (e.Node.Tag is string)
                 {
-                    currentText = e.Node.Tag.ToString();
+                    _currentText = e.Node.Tag.ToString();
                 }
                 else if (e.Node is DatabaseAccountNode)
                 {
-                    currentJson = JsonConvert.SerializeObject(e.Node.Tag, Formatting.Indented);
+                    _currentJson = JsonConvert.SerializeObject(e.Node.Tag, Formatting.Indented);
                 }
                 else if (e.Node.Tag != null)
                 {
-                    currentJson = e.Node.Tag.ToString();
+                    _currentJson = e.Node.Tag.ToString();
                 }
 
-                if (currentJson == null && currentText == null)
+                if (_currentJson == null && _currentText == null)
                 {
-                    currentText = e.Node.Text;
+                    _currentText = e.Node.Text;
                 }
 
                 DisplayResponseContent();
@@ -906,27 +908,27 @@ namespace Microsoft.Azure.DocumentDBStudio
         {
             SetLoadingState();
 
-            if (string.Compare(currentCrudName, "Create documentCollection", StringComparison.OrdinalIgnoreCase) == 0 ||
-                string.Compare(currentCrudName, "Replace documentCollection", StringComparison.OrdinalIgnoreCase) == 0)
+            if (string.Compare(_currentCrudName, "Create documentCollection", StringComparison.OrdinalIgnoreCase) == 0 ||
+                string.Compare(_currentCrudName, "Replace documentCollection", StringComparison.OrdinalIgnoreCase) == 0)
             {
-                collectionToCreate.IndexingPolicy.IncludedPaths.Clear();
+                _collectionToCreate.IndexingPolicy.IncludedPaths.Clear();
                 foreach (object item in lbIncludedPath.Items)
                 {
                     IncludedPath includedPath = item as IncludedPath;
-                    collectionToCreate.IndexingPolicy.IncludedPaths.Add(includedPath);
+                    _collectionToCreate.IndexingPolicy.IncludedPaths.Add(includedPath);
                 }
 
-                collectionToCreate.IndexingPolicy.ExcludedPaths.Clear();
+                _collectionToCreate.IndexingPolicy.ExcludedPaths.Clear();
                 foreach (object item in lbExcludedPath.Items)
                 {
                     String excludedPath = item as String;
-                    collectionToCreate.IndexingPolicy.ExcludedPaths.Add(new ExcludedPath() {Path = excludedPath});
+                    _collectionToCreate.IndexingPolicy.ExcludedPaths.Add(new ExcludedPath() {Path = excludedPath});
                 }
 
-                collectionToCreate.Id = tbCollectionId.Text;
-                currentOperation(null, collectionToCreate);
+                _collectionToCreate.Id = tbCollectionId.Text;
+                _currentOperation(null, _collectionToCreate);
             }
-            else if (currentCrudName.StartsWith("Create trigger", StringComparison.OrdinalIgnoreCase))
+            else if (_currentCrudName.StartsWith("Create trigger", StringComparison.OrdinalIgnoreCase))
             {
                 Trigger trigger = new Trigger();
                 trigger.Body = tbCrudContext.Text;
@@ -937,24 +939,24 @@ namespace Microsoft.Azure.DocumentDBStudio
                 else if (rbPostTrigger.Checked)
                     trigger.TriggerType = TriggerType.Post;
 
-                currentOperation(null, trigger);
+                _currentOperation(null, trigger);
             }
             else
             {
                 if (!string.IsNullOrEmpty(tbCrudContext.SelectedText))
                 {
-                    currentOperation(tbCrudContext.SelectedText, textBoxforId.Text);
+                    _currentOperation(tbCrudContext.SelectedText, textBoxforId.Text);
                 }
                 else
                 {
-                    if (currentCrudName.StartsWith("Execute StoredProcedure", StringComparison.Ordinal) &&
+                    if (_currentCrudName.StartsWith("Execute StoredProcedure", StringComparison.Ordinal) &&
                         !tbCrudContext.Modified)
                     {
-                        currentOperation(null, textBoxforId.Text);
+                        _currentOperation(null, textBoxforId.Text);
                     }
                     else
                     {
-                        currentOperation(tbCrudContext.Text, textBoxforId.Text);
+                        _currentOperation(tbCrudContext.Text, textBoxforId.Text);
                     }
                 }
             }
@@ -966,7 +968,7 @@ namespace Microsoft.Azure.DocumentDBStudio
             {
                 json = "\"\"";
             }
-            string prettyPrint = prettyJSONTemplate.Replace("&JSONSTRINGREPLACE&", json);
+            string prettyPrint = _prettyJsonTemplate.Replace("&JSONSTRINGREPLACE&", json);
 
             if (string.IsNullOrEmpty(extraText))
             {
@@ -976,7 +978,7 @@ namespace Microsoft.Azure.DocumentDBStudio
             prettyPrint = prettyPrint.Replace("&EXTRASTRINGREPLACE&", Helper.FormatTextAsHtml(extraText, false, false));
 
             // save prettyePrint to file.
-            string prettyPrintHtml = Path.Combine(appTempPath, "prettyPrint.Html");
+            string prettyPrintHtml = Path.Combine(_appTempPath, "prettyPrint.Html");
 
             using (StreamWriter outfile = new StreamWriter(prettyPrintHtml))
             {
@@ -994,11 +996,11 @@ namespace Microsoft.Azure.DocumentDBStudio
 
             if (!string.IsNullOrEmpty(tbCrudContext.SelectedText))
             {
-                currentOperation(tbCrudContext.SelectedText, textBoxforId.Text);
+                _currentOperation(tbCrudContext.SelectedText, textBoxforId.Text);
             }
             else
             {
-                currentOperation(tbCrudContext.Text, textBoxforId.Text);
+                _currentOperation(tbCrudContext.Text, textBoxforId.Text);
             }
         }
 
@@ -1022,7 +1024,7 @@ namespace Microsoft.Azure.DocumentDBStudio
                 tbPreTrigger.Enabled = false;
                 tbPostTrigger.Enabled = false;
 
-                requestOptions = null;
+                _requestOptions = null;
             }
             else
             {
@@ -1048,52 +1050,52 @@ namespace Microsoft.Azure.DocumentDBStudio
 
         private void CreateDefaultRequestOptions()
         {
-            requestOptions = new RequestOptions();
+            _requestOptions = new RequestOptions();
 
             if (rbIndexingDefault.Checked)
             {
-                requestOptions.IndexingDirective = IndexingDirective.Default;
+                _requestOptions.IndexingDirective = IndexingDirective.Default;
             }
             else if (rbIndexingExclude.Checked)
             {
-                requestOptions.IndexingDirective = IndexingDirective.Exclude;
+                _requestOptions.IndexingDirective = IndexingDirective.Exclude;
             }
             else if (rbIndexingInclude.Checked)
             {
-                requestOptions.IndexingDirective = IndexingDirective.Include;
+                _requestOptions.IndexingDirective = IndexingDirective.Include;
             }
 
-            requestOptions.AccessCondition = new AccessCondition();
+            _requestOptions.AccessCondition = new AccessCondition();
             if (rbAccessConditionIfMatch.Checked)
             {
-                requestOptions.AccessCondition.Type = AccessConditionType.IfMatch;
+                _requestOptions.AccessCondition.Type = AccessConditionType.IfMatch;
             }
             else if (rbAccessConditionIfNoneMatch.Checked)
             {
-                requestOptions.AccessCondition.Type = AccessConditionType.IfNoneMatch;
+                _requestOptions.AccessCondition.Type = AccessConditionType.IfNoneMatch;
             }
 
             string condition = tbAccessConditionText.Text;
             if (!string.IsNullOrEmpty(condition))
             {
-                requestOptions.AccessCondition.Condition = condition;
+                _requestOptions.AccessCondition.Condition = condition;
             }
 
             if (rbConsistencyStrong.Checked)
             {
-                requestOptions.ConsistencyLevel = ConsistencyLevel.Strong;
+                _requestOptions.ConsistencyLevel = ConsistencyLevel.Strong;
             }
             else if (rbConsistencyBound.Checked)
             {
-                requestOptions.ConsistencyLevel = ConsistencyLevel.BoundedStaleness;
+                _requestOptions.ConsistencyLevel = ConsistencyLevel.BoundedStaleness;
             }
             else if (rbConsistencySession.Checked)
             {
-                requestOptions.ConsistencyLevel = ConsistencyLevel.Session;
+                _requestOptions.ConsistencyLevel = ConsistencyLevel.Session;
             }
             else if (rbConsistencyEventual.Checked)
             {
-                requestOptions.ConsistencyLevel = ConsistencyLevel.Eventual;
+                _requestOptions.ConsistencyLevel = ConsistencyLevel.Eventual;
             }
 
             string preTrigger = tbPreTrigger.Text;
@@ -1101,7 +1103,7 @@ namespace Microsoft.Azure.DocumentDBStudio
             {
                 // split by ;
                 string[] segments = preTrigger.Split(new char[] {';'}, StringSplitOptions.RemoveEmptyEntries);
-                requestOptions.PreTriggerInclude = segments;
+                _requestOptions.PreTriggerInclude = segments;
             }
 
             string postTrigger = tbPostTrigger.Text;
@@ -1109,53 +1111,53 @@ namespace Microsoft.Azure.DocumentDBStudio
             {
                 // split by ;
                 string[] segments = postTrigger.Split(new char[] {';'}, StringSplitOptions.RemoveEmptyEntries);
-                requestOptions.PostTriggerInclude = segments;
+                _requestOptions.PostTriggerInclude = segments;
             }
         }
 
         private void rbIndexingDefault_CheckedChanged(object sender, EventArgs e)
         {
-            requestOptions.IndexingDirective = IndexingDirective.Default;
+            _requestOptions.IndexingDirective = IndexingDirective.Default;
         }
 
         private void rbIndexingInclude_CheckedChanged(object sender, EventArgs e)
         {
-            requestOptions.IndexingDirective = IndexingDirective.Include;
+            _requestOptions.IndexingDirective = IndexingDirective.Include;
         }
 
         private void rbIndexingExclude_CheckedChanged(object sender, EventArgs e)
         {
-            requestOptions.IndexingDirective = IndexingDirective.Exclude;
+            _requestOptions.IndexingDirective = IndexingDirective.Exclude;
         }
 
         private void rbAccessConditionIfMatch_CheckedChanged(object sender, EventArgs e)
         {
-            requestOptions.AccessCondition.Type = AccessConditionType.IfMatch;
+            _requestOptions.AccessCondition.Type = AccessConditionType.IfMatch;
         }
 
         private void rbAccessConditionIfNoneMatch_CheckedChanged(object sender, EventArgs e)
         {
-            requestOptions.AccessCondition.Type = AccessConditionType.IfNoneMatch;
+            _requestOptions.AccessCondition.Type = AccessConditionType.IfNoneMatch;
         }
 
         private void rbConsistencyStrong_CheckedChanged(object sender, EventArgs e)
         {
-            requestOptions.ConsistencyLevel = ConsistencyLevel.Strong;
+            _requestOptions.ConsistencyLevel = ConsistencyLevel.Strong;
         }
 
         private void rbConsistencyBound_CheckedChanged(object sender, EventArgs e)
         {
-            requestOptions.ConsistencyLevel = ConsistencyLevel.BoundedStaleness;
+            _requestOptions.ConsistencyLevel = ConsistencyLevel.BoundedStaleness;
         }
 
         private void rbConsistencySession_CheckedChanged(object sender, EventArgs e)
         {
-            requestOptions.ConsistencyLevel = ConsistencyLevel.Session;
+            _requestOptions.ConsistencyLevel = ConsistencyLevel.Session;
         }
 
         private void rbConsistencyEventual_CheckedChanged(object sender, EventArgs e)
         {
-            requestOptions.ConsistencyLevel = ConsistencyLevel.Eventual;
+            _requestOptions.ConsistencyLevel = ConsistencyLevel.Eventual;
         }
 
         private void btnAddIncludePath_Click(object sender, EventArgs e)
@@ -1248,7 +1250,7 @@ namespace Microsoft.Azure.DocumentDBStudio
                 btnAddExcludedPath.Enabled = false;
                 btnRemoveExcludedPath.Enabled = false;
 
-                collectionToCreate = new DocumentCollection();
+                _collectionToCreate = new DocumentCollection();
             }
             else
             {
@@ -1272,32 +1274,32 @@ namespace Microsoft.Azure.DocumentDBStudio
 
         private void CreateDefaultIndexingPolicy()
         {
-            collectionToCreate.IndexingPolicy.Automatic = cbAutomatic.Checked;
+            _collectionToCreate.IndexingPolicy.Automatic = cbAutomatic.Checked;
 
             if (rbConsistent.Checked)
             {
-                collectionToCreate.IndexingPolicy.IndexingMode = IndexingMode.Consistent;
+                _collectionToCreate.IndexingPolicy.IndexingMode = IndexingMode.Consistent;
             }
             else
             {
-                collectionToCreate.IndexingPolicy.IndexingMode = IndexingMode.Lazy;
+                _collectionToCreate.IndexingPolicy.IndexingMode = IndexingMode.Lazy;
             }
         }
 
         private void cbAutomatic_CheckedChanged(object sender, EventArgs e)
         {
-            collectionToCreate.IndexingPolicy.Automatic = cbAutomatic.Checked;
+            _collectionToCreate.IndexingPolicy.Automatic = cbAutomatic.Checked;
         }
 
         private void rbConsistent_CheckedChanged(object sender, EventArgs e)
         {
             if (rbConsistent.Checked)
             {
-                collectionToCreate.IndexingPolicy.IndexingMode = IndexingMode.Consistent;
+                _collectionToCreate.IndexingPolicy.IndexingMode = IndexingMode.Consistent;
             }
             else
             {
-                collectionToCreate.IndexingPolicy.IndexingMode = IndexingMode.Lazy;
+                _collectionToCreate.IndexingPolicy.IndexingMode = IndexingMode.Lazy;
             }
         }
 
@@ -1305,27 +1307,27 @@ namespace Microsoft.Azure.DocumentDBStudio
         {
             if (rbConsistent.Checked)
             {
-                collectionToCreate.IndexingPolicy.IndexingMode = IndexingMode.Consistent;
+                _collectionToCreate.IndexingPolicy.IndexingMode = IndexingMode.Consistent;
             }
             else
             {
-                collectionToCreate.IndexingPolicy.IndexingMode = IndexingMode.Lazy;
+                _collectionToCreate.IndexingPolicy.IndexingMode = IndexingMode.Lazy;
             }
         }
 
         private void rbOfferS1_CheckedChanged(object sender, EventArgs e)
         {
-            offerType = "S1";
+            _offerType = "S1";
         }
 
         private void rbOfferS2_CheckedChanged(object sender, EventArgs e)
         {
-            offerType = "S2";
+            _offerType = "S2";
         }
 
         private void rbOfferS3_CheckedChanged(object sender, EventArgs e)
         {
-            offerType = "S3";
+            _offerType = "S3";
         }
 
         private delegate DialogResult MessageBoxDelegate(

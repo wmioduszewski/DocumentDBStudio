@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Globalization;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Azure.DocumentDBStudio.Util;
 using Microsoft.Azure.Documents;
@@ -72,7 +73,7 @@ namespace Microsoft.Azure.DocumentDBStudio.TreeNodeElems
                 false, "select * from c", QueryOffers);
         }
 
-        async void QueryOffers(string queryText, object optional)
+        async Task QueryOffers(string queryText, object optional)
         {
             try
             {

@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Dynamic;
 using System.Globalization;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Azure.DocumentDBStudio.Util;
 using Microsoft.Azure.Documents;
@@ -85,7 +86,7 @@ namespace Microsoft.Azure.DocumentDBStudio.TreeNodeElems
                     false, x, AddUser);
         }
 
-        async void AddUser(string body, object id)
+        async Task AddUser(string body, object id)
         {
             try
             {

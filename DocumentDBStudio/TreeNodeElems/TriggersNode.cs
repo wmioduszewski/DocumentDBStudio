@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Azure.DocumentDBStudio.Util;
 using Microsoft.Azure.Documents;
@@ -102,7 +103,7 @@ namespace Microsoft.Azure.DocumentDBStudio.TreeNodeElems
                     true, "function() { \r\n \r\n}", AddTrigger, new CommandContext {IsCreateTrigger = true});
         }
 
-        async void AddTrigger(string body, object triggerObject)
+        async Task AddTrigger(string body, object triggerObject)
         {
             try
             {

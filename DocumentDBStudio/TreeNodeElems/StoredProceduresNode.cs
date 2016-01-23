@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Azure.DocumentDBStudio.Util;
 using Microsoft.Azure.Documents;
@@ -105,7 +106,7 @@ namespace Microsoft.Azure.DocumentDBStudio.TreeNodeElems
             }
         }
 
-        async void AddStoredProcedure(string body, object idobject)
+        async Task AddStoredProcedure(string body, object idobject)
         {
             string id = idobject as string;
             try

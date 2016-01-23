@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Dynamic;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Azure.DocumentDBStudio.Util;
 using Microsoft.Azure.Documents;
@@ -65,7 +66,7 @@ namespace Microsoft.Azure.DocumentDBStudio.TreeNodeElems
             }
         }
 
-        public async void FillWithChildren()
+        public async Task FillWithChildren()
         {
             try
             {
@@ -137,7 +138,7 @@ namespace Microsoft.Azure.DocumentDBStudio.TreeNodeElems
             Program.GetMain().SetCrudContext(this, "Create documentCollection", false, x, AddDocumentCollection);
         }
 
-        async void AddDocumentCollection(string text, object optional)
+        async Task AddDocumentCollection(string text, object optional)
         {
             try
             {
@@ -169,7 +170,7 @@ namespace Microsoft.Azure.DocumentDBStudio.TreeNodeElems
             }
         }
 
-        async void DeleteDatabase(string text, object optional)
+        async Task DeleteDatabase(string text, object optional)
         {
             try
             {

@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Azure.DocumentDBStudio.Util;
 using Microsoft.Azure.Documents;
@@ -102,7 +103,7 @@ namespace Microsoft.Azure.DocumentDBStudio.TreeNodeElems
             }
         }
 
-        async void AddUDF(string body, object idObject)
+        async Task AddUDF(string body, object idObject)
         {
             string id = idObject as string;
             try
