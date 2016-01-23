@@ -867,41 +867,46 @@ namespace Microsoft.Azure.DocumentDBStudio
             }
             else if (e.Button == MouseButtons.Left)
             {
-                // render the JSON in the right panel.
-                _currentText = null;
-                _currentJson = null;
-
-                if (e.Node is DocumentNode)
-                {
-                    DocumentNode nodeBase = e.Node as DocumentNode;
-                    string body = nodeBase.GetBody();
-
-                    if (!string.IsNullOrEmpty(body))
-                    {
-                        _currentText = body;
-                    }
-                }
-
-                if (e.Node.Tag is string)
-                {
-                    _currentText = e.Node.Tag.ToString();
-                }
-                else if (e.Node is DatabaseAccountNode)
-                {
-                    _currentJson = JsonConvert.SerializeObject(e.Node.Tag, Formatting.Indented);
-                }
-                else if (e.Node.Tag != null)
-                {
-                    _currentJson = e.Node.Tag.ToString();
-                }
-
-                if (_currentJson == null && _currentText == null)
-                {
-                    _currentText = e.Node.Text;
-                }
-
-                DisplayResponseContent();
+                RenderJson(e.Node);
             }
+        }
+
+        private void RenderJson(TreeNode treeNode)
+        {
+            // render the JSON in the right panel.
+            _currentText = null;
+            _currentJson = null;
+
+            if (treeNode is DocumentNode)
+            {
+                DocumentNode nodeBase = treeNode as DocumentNode;
+                string body = nodeBase.GetBody();
+
+                if (!string.IsNullOrEmpty(body))
+                {
+                    _currentText = body;
+                }
+            }
+
+            if (treeNode.Tag is string)
+            {
+                _currentText = treeNode.Tag.ToString();
+            }
+            else if (treeNode is DatabaseAccountNode)
+            {
+                _currentJson = JsonConvert.SerializeObject(treeNode.Tag, Formatting.Indented);
+            }
+            else if (treeNode.Tag != null)
+            {
+                _currentJson = treeNode.Tag.ToString();
+            }
+
+            if (_currentJson == null && _currentText == null)
+            {
+                _currentText = treeNode.Text;
+            }
+
+            DisplayResponseContent();
         }
 
         private void toolStripBtnExecute_Click(object sender, EventArgs e)
@@ -1332,5 +1337,10 @@ namespace Microsoft.Azure.DocumentDBStudio
 
         private delegate DialogResult MessageBoxDelegate(
             string msg, string title, MessageBoxButtons buttons, MessageBoxIcon icon);
+
+        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            RenderJson(e.Node);
+        }
     }
 }

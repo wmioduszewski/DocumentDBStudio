@@ -86,7 +86,7 @@ namespace Microsoft.Azure.DocumentDBStudio.TreeNodeElems
                 .SetCrudContext(this,
                     string.Format(CultureInfo.InvariantCulture, "Add UserDefinedFunction in collection {0}",
                         (Parent.Tag as DocumentCollection).Id),
-                    true, "function() { \r\n \r\n}", AddUDF);
+                    true, "function() { \r\n \r\n}", AddUdf);
         }
 
         void myMenuItemAddUDFFromFile_Click(object sender, EventArgs e)
@@ -99,11 +99,11 @@ namespace Microsoft.Azure.DocumentDBStudio.TreeNodeElems
                 string filename = ofd.FileName;
                 string text = File.ReadAllText(filename);
 
-                Program.GetMain().SetCrudContext(this, "Create UDF", false, text, AddUDF);
+                Program.GetMain().SetCrudContext(this, "Create UDF", false, text, AddUdf);
             }
         }
 
-        async Task AddUDF(string body, object idObject)
+        async Task AddUdf(string body, object idObject)
         {
             string id = idObject as string;
             try
