@@ -38,7 +38,6 @@ namespace Microsoft.Azure.DocumentDBStudio
         private string _currentJson;
         Func<string, object, Task> _currentOperation;
         private string _currentText;
-        private int defaultFontPoint = 9;
         private int _fontScale = 100;
         private string _homepage;
 
@@ -47,6 +46,7 @@ namespace Microsoft.Azure.DocumentDBStudio
         private string _prettyJsonTemplate;
 
         private RequestOptions _requestOptions;
+        private int defaultFontPoint = 9;
 
         public MainForm()
         {
@@ -137,7 +137,7 @@ namespace Microsoft.Azure.DocumentDBStudio
 
         public RequestOptions GetRequestOptions(bool isCollection = false)
         {
-            if (this._requestOptions != null)
+            if (_requestOptions != null)
             {
                 if (tbPostTrigger.Modified)
                 {
@@ -145,8 +145,8 @@ namespace Microsoft.Azure.DocumentDBStudio
                     if (!string.IsNullOrEmpty(postTrigger))
                     {
                         // split by ;
-                        string[] segments = postTrigger.Split(new char[] {';'}, StringSplitOptions.RemoveEmptyEntries);
-                        this._requestOptions.PostTriggerInclude = segments;
+                        string[] segments = postTrigger.Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries);
+                        _requestOptions.PostTriggerInclude = segments;
                     }
                     tbPostTrigger.Modified = false;
                 }
@@ -157,8 +157,8 @@ namespace Microsoft.Azure.DocumentDBStudio
                     if (!string.IsNullOrEmpty(preTrigger))
                     {
                         // split by ;
-                        string[] segments = preTrigger.Split(new char[] {';'}, StringSplitOptions.RemoveEmptyEntries);
-                        this._requestOptions.PreTriggerInclude = segments;
+                        string[] segments = preTrigger.Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries);
+                        _requestOptions.PreTriggerInclude = segments;
                     }
                 }
                 if (tbAccessConditionText.Modified)
@@ -166,12 +166,12 @@ namespace Microsoft.Azure.DocumentDBStudio
                     string condition = tbAccessConditionText.Text;
                     if (!string.IsNullOrEmpty(condition))
                     {
-                        this._requestOptions.AccessCondition.Condition = condition;
+                        _requestOptions.AccessCondition.Condition = condition;
                     }
                 }
             }
 
-            RequestOptions requestOptions = this._requestOptions;
+            RequestOptions requestOptions = _requestOptions;
 
             if (isCollection)
             {
@@ -181,7 +181,7 @@ namespace Microsoft.Azure.DocumentDBStudio
                 }
                 else
                 {
-                    requestOptions = new RequestOptions() {OfferType = _offerType};
+                    requestOptions = new RequestOptions {OfferType = _offerType};
                 }
             }
 
@@ -198,10 +198,10 @@ namespace Microsoft.Azure.DocumentDBStudio
             {
                 try
                 {
-                    HttpRequestMessage request = new HttpRequestMessage()
+                    HttpRequestMessage request = new HttpRequestMessage
                     {
                         RequestUri = uri,
-                        Method = HttpMethod.Get,
+                        Method = HttpMethod.Get
                     };
                     request.Headers.UserAgent.Add(new ProductInfoHeaderValue("DocumentDBStudio",
                         Constants.ProductVersion));
@@ -216,7 +216,7 @@ namespace Microsoft.Azure.DocumentDBStudio
                         string latestReleaseString = latestReleaseTag.ToString();
 
                         if (
-                            string.Compare(Constants.ProductVersion.ToString(), latestReleaseString,
+                            string.Compare(Constants.ProductVersion, latestReleaseString,
                                 StringComparison.OrdinalIgnoreCase) < 0)
                         {
                             Invoke(new MessageBoxDelegate(ShowMessage),
@@ -234,7 +234,8 @@ namespace Microsoft.Azure.DocumentDBStudio
             }
         }
 
-        public void SetCrudContext(TreeNode node, string name, bool showId, string bodytext, Func<string, object, Task> func,
+        public void SetCrudContext(TreeNode node, string name, bool showId, string bodytext,
+            Func<string, object, Task> func,
             CommandContext commandContext = null)
         {
             if (commandContext == null)
@@ -245,7 +246,7 @@ namespace Microsoft.Azure.DocumentDBStudio
 
             _currentCrudName = name;
             _currentOperation = func;
-            
+
             tabCrudContext.Text = name;
             tbCrudContext.Text = bodytext;
 
@@ -397,7 +398,7 @@ namespace Microsoft.Azure.DocumentDBStudio
 
             cbUrl.Items.Add("about:home");
             cbUrl.SelectedIndex = 0;
-            cbUrl.KeyDown += new KeyEventHandler(cbUrl_KeyDown);
+            cbUrl.KeyDown += cbUrl_KeyDown;
 
             btnBack.Enabled = false;
 
@@ -406,10 +407,10 @@ namespace Microsoft.Azure.DocumentDBStudio
             ButtomSplitContainer.Panel1Collapsed = true;
 
             KeyPreview = true;
-            PreviewKeyDown += new PreviewKeyDownEventHandler(MainForm_PreviewKeyDown);
+            PreviewKeyDown += MainForm_PreviewKeyDown;
 
-            webBrowserResponse.PreviewKeyDown += new PreviewKeyDownEventHandler(webBrowserResponse_PreviewKeyDown);
-            webBrowserResponse.StatusTextChanged += new EventHandler(webBrowserResponse_StatusTextChanged);
+            webBrowserResponse.PreviewKeyDown += webBrowserResponse_PreviewKeyDown;
+            webBrowserResponse.StatusTextChanged += webBrowserResponse_StatusTextChanged;
             webBrowserResponse.ScriptErrorsSuppressed = true;
 
             tabControl.SelectedTab = tabCrudContext;
@@ -451,7 +452,7 @@ namespace Microsoft.Azure.DocumentDBStudio
             ToolStripControlHost host = new ToolStripControlHost(_cbEnableScan);
             feedToolStrip.Items.Insert(1, host);
 
-            lbIncludedPath.Items.Add(new IncludedPath() {Path = "/"});
+            lbIncludedPath.Items.Add(new IncludedPath {Path = "/"});
         }
 
 
@@ -703,7 +704,7 @@ namespace Microsoft.Azure.DocumentDBStudio
 
         private void btnHeaders_Click(object sender, EventArgs e)
         {
-            if (splitContainerInner.Panel1Collapsed == true)
+            if (splitContainerInner.Panel1Collapsed)
             {
                 splitContainerInner.Panel1Collapsed = false;
                 btnHeaders.Checked = true;
@@ -927,7 +928,7 @@ namespace Microsoft.Azure.DocumentDBStudio
                 foreach (object item in lbExcludedPath.Items)
                 {
                     String excludedPath = item as String;
-                    _collectionToCreate.IndexingPolicy.ExcludedPaths.Add(new ExcludedPath() {Path = excludedPath});
+                    _collectionToCreate.IndexingPolicy.ExcludedPaths.Add(new ExcludedPath {Path = excludedPath});
                 }
 
                 _collectionToCreate.Id = tbCollectionId.Text;
@@ -1107,7 +1108,7 @@ namespace Microsoft.Azure.DocumentDBStudio
             if (!string.IsNullOrEmpty(preTrigger))
             {
                 // split by ;
-                string[] segments = preTrigger.Split(new char[] {';'}, StringSplitOptions.RemoveEmptyEntries);
+                string[] segments = preTrigger.Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries);
                 _requestOptions.PreTriggerInclude = segments;
             }
 
@@ -1115,7 +1116,7 @@ namespace Microsoft.Azure.DocumentDBStudio
             if (!string.IsNullOrEmpty(postTrigger))
             {
                 // split by ;
-                string[] segments = postTrigger.Split(new char[] {';'}, StringSplitOptions.RemoveEmptyEntries);
+                string[] segments = postTrigger.Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries);
                 _requestOptions.PostTriggerInclude = segments;
             }
         }
@@ -1228,14 +1229,7 @@ namespace Microsoft.Azure.DocumentDBStudio
 
         private void lbExcludedPath_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (lbExcludedPath.SelectedItem != null)
-            {
-                btnRemoveExcludedPath.Enabled = true;
-            }
-            else
-            {
-                btnRemoveExcludedPath.Enabled = false;
-            }
+            btnRemoveExcludedPath.Enabled = lbExcludedPath.SelectedItem != null;
         }
 
         private void cbIndexingPolicyDefault_CheckedChanged(object sender, EventArgs e)
@@ -1310,14 +1304,9 @@ namespace Microsoft.Azure.DocumentDBStudio
 
         private void rbLazy_CheckedChanged(object sender, EventArgs e)
         {
-            if (rbConsistent.Checked)
-            {
-                _collectionToCreate.IndexingPolicy.IndexingMode = IndexingMode.Consistent;
-            }
-            else
-            {
-                _collectionToCreate.IndexingPolicy.IndexingMode = IndexingMode.Lazy;
-            }
+            _collectionToCreate.IndexingPolicy.IndexingMode = rbConsistent.Checked
+                ? IndexingMode.Consistent
+                : IndexingMode.Lazy;
         }
 
         private void rbOfferS1_CheckedChanged(object sender, EventArgs e)
@@ -1335,12 +1324,12 @@ namespace Microsoft.Azure.DocumentDBStudio
             _offerType = "S3";
         }
 
-        private delegate DialogResult MessageBoxDelegate(
-            string msg, string title, MessageBoxButtons buttons, MessageBoxIcon icon);
-
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
             RenderJson(e.Node);
         }
+
+        private delegate DialogResult MessageBoxDelegate(
+            string msg, string title, MessageBoxButtons buttons, MessageBoxIcon icon);
     }
 }
